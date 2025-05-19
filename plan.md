@@ -26,4 +26,4 @@
 ## Discussion
 - Do you write tests?
 - Do you do interactive plotting? What library?
-- 
+- How do you structure your code?
