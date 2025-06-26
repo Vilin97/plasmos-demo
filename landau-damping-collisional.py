@@ -2,6 +2,8 @@
 # Landau damping + Landau-collisions (1d-x / 2d-v)  ―  JAX, concise demo
 import os, jax, jax.numpy as jnp, jax.random as jr
 from tqdm import trange
+import numpy as np
+from scipy.signal import argrelextrema
 import matplotlib.pyplot as plt
 jax.config.update("jax_enable_x64", True)
 os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
@@ -15,7 +17,7 @@ steps         = int(T/dt)
 dx, η         = L/M, L/M                         # η = dx
 w_p           = L/N                              # particle charge ⇒ ∫ρ = L
 h_v           = 1.0                              # bandwidth in v
-C_col         = 0.1                             # collision strength, try 0, 0.1, 0.5
+C_col         = 0.0                             # collision strength, try 0, 0.1, 0.5
 eps           = 1e-8
 
 # ── initial particles ───────────────────────────────────────────────────
@@ -115,8 +117,42 @@ E_l2, t_hist = jnp.array(E_l2), jnp.array(t_hist)
 decay = E_l2[0] * jnp.exp(γ * t_hist)
 
 #%%
+plt.figure(figsize=(8, 5))
 plt.semilogy(t_hist, E_l2, label="PIC + collisions")
-plt.semilogy(t_hist, decay, "r--", label=rf"$\gamma = {γ:.3f}$")
-plt.xlabel("t"); plt.ylabel(r"$\|E\|_{L^2}$"); plt.legend(); plt.tight_layout(); plt.show()
+
+# Predicted collisional curve
+plt.semilogy(t_hist, decay, "r--", label=rf"$collisional:\ e^{{\gamma t}},\ \gamma = {γ:.3f}$")
+
+# Predicted collisionless curve (C_col=0)
+γ0 = -1/k**3 * jnp.sqrt(jnp.pi/8) * jnp.exp(-1/(2*k**2) - 1.5)
+decay0 = E_l2[0] * jnp.exp(γ0 * t_hist)
+plt.semilogy(t_hist, decay0, "b--", label=rf"$collisionless:\ e^{{\gamma_0 t}},\ \gamma_0 = {γ0:.3f}$")
+
+plt.xlabel("t")
+plt.ylabel(r"$\|E\|_{L^2}$")
+plt.title("Electric field norm decay")
+plt.legend()
+plt.tight_layout()
+
+# Find local maxima for t < 10
+mask = t_hist < 10
+norms_masked = np.array(E_l2)[mask]
+times_masked = np.array(t_hist)[mask]
+
+maxima_indices = argrelextrema(norms_masked, np.greater, order=1)[0]
+maxima_times = times_masked[maxima_indices]
+maxima_values = norms_masked[maxima_indices]
+
+plt.scatter(maxima_times, maxima_values, color='g', marker='o')
+
+# Fit a straight line (in log space) through the maxima
+if len(maxima_times) > 1:
+    coeffs = np.polyfit(maxima_times, np.log(maxima_values), 1)
+    fit_line = np.exp(coeffs[1] + coeffs[0] * times_masked)
+    plt.plot(times_masked, fit_line, 'g--', label=fr'$e^{{\beta t}},\ \beta={coeffs[0]:.3f}$')
+    print(f"Decay rate from maxima fit: {coeffs[0]:.4f}")
+
+plt.legend()
+plt.show()
 
 # %%
