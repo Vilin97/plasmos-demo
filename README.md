@@ -19,14 +19,14 @@
 - start with vlasov.py -- a barebones implementation of a PIC solver for the Vlasov equation
 - add multi-gpu support (use all available gpus, and all available memory). Should still be runnable on a cpu if no gpu is available.
 - make a runnable script with a `main()` that can accept: 
-  - dimensions dx, dv
+  - dimension dv
   - number of particles n
   - number of cells M
   - time step dt
 - add wandb logging: args used, host device(s), peak memory, runtime, norm of Electric energy, fitted slope, the electric energy plot. Log to `entity='naske'`.
-- make a batch job, with dx=1, dv=1, n=10^6, M=100, dt=0.01 by default
+- make a batch job, with dv=1, n=10^6, M=100, dt=0.01 by default
   - sweep n in 1e6, 1e7, 1e8
   - sweep M in 20, 100, 400
   - sweep dt in 1e-1, 1e-2, 1e-3
-  - sweep dx=dv in 1,3
+  - sweep dv in 1,3
   - sweep seed in 1,2,3

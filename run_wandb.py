@@ -40,13 +40,13 @@ def rejection_sample(key, density_fn, domain, max_value, num_samples=1):
     return candidates[accepted][:num_samples]
 
 
-def get_peak_memory_mb():
-    """Peak memory in MB per device."""
+def get_peak_memory_gb():
+    """Peak memory in GB per device."""
     result = {}
     for d in jax.local_devices():
         stats = d.memory_stats()
         if stats is not None:
-            result[str(d)] = stats['peak_bytes_in_use'] / 1e6
+            result[str(d)] = stats['peak_bytes_in_use'] / 1e9
     return result
 
 
@@ -152,6 +152,7 @@ def main():
     wandb.init(
         entity="naske",
         project="vlasov-pic",
+        name=f"dv{dv}_n{n:.0e}_M{M}_dt{dt}",
         config={
             "dv": dv, "n": n, "M": M, "dt": dt,
             "seed": args.seed, "alpha": alpha, "k": k,
@@ -203,13 +204,15 @@ def main():
     num_steps = int(final_time / dt)
     E_L2 = [float(jnp.sqrt(jnp.sum(E**2) * eta))]
 
+    t_sim = 0.0
     t0 = time.perf_counter()
     for step_i in tqdm(range(num_steps)):
         x, v, E = pic_step(x, v, E)
         E = E - jnp.mean(E)
+        t_sim += dt
         e_l2 = float(jnp.sqrt(jnp.sum(E**2) * eta))
         E_L2.append(e_l2)
-        wandb.log({"E_L2": e_l2}, step=step_i)
+        wandb.log({"E_L2": e_l2, "t": t_sim}, step=step_i)
     jax.block_until_ready((x, v, E))
     runtime = time.perf_counter() - t0
 
@@ -254,7 +257,7 @@ def main():
     fig_energy.tight_layout()
 
     # --- peak memory ---
-    peak_mem = get_peak_memory_mb()
+    peak_mem = get_peak_memory_gb()
     peak_mem_total = sum(peak_mem.values()) if peak_mem else None
 
     # --- log summary to W&B ---
@@ -262,8 +265,8 @@ def main():
         "runtime_s": runtime,
         "ms_per_step": runtime / num_steps * 1000,
         "fitted_slope": fitted_slope,
-        "peak_memory_mb": peak_mem,
-        "peak_memory_total_mb": peak_mem_total,
+        "peak_memory_gb": peak_mem,
+        "peak_memory_total_gb": peak_mem_total,
         "energy_plot": wandb.Image(fig_energy),
     }
     wandb.log(summary)
