@@ -225,11 +225,7 @@ def main():
     ax.grid(True)
     ax.legend()
     fig_energy.tight_layout()
-    fig_energy.savefig("energy.png", dpi=150)
     plt.close(fig_energy)
-
-    print("Saved: energy.png")
-
 
 if __name__ == "__main__":
     main()

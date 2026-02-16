@@ -252,8 +252,6 @@ def main():
     ax.grid(True)
     ax.legend()
     fig_energy.tight_layout()
-    fig_energy.savefig("energy.png", dpi=150)
-    plt.close(fig_energy)
 
     # --- peak memory ---
     peak_mem = get_peak_memory_mb()
@@ -266,14 +264,11 @@ def main():
         "fitted_slope": fitted_slope,
         "peak_memory_mb": peak_mem,
         "peak_memory_total_mb": peak_mem_total,
-        "energy_plot": wandb.Image("energy.png"),
+        "energy_plot": wandb.Image(fig_energy),
     }
     wandb.log(summary)
+    plt.close(fig_energy)
     wandb.finish()
-
-    print("Saved: energy.png")
-    print("W&B run finished.")
-
 
 if __name__ == "__main__":
     main()
