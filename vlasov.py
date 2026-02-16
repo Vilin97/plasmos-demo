@@ -131,7 +131,6 @@ seed = 42
 
 # set physical constants
 q = 1       # particle charge
-dx = 1       # Position dimension
 dv = 1       # Velocity dimension
 
 alpha = 0.1  # Perturbation strength

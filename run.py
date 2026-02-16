@@ -106,7 +106,6 @@ def make_pic_step(mesh, M, eta, w, dt_val, box_length):
 # ---------------------------------------------------------------------------
 def main():
     parser = argparse.ArgumentParser(description="PIC Vlasov solver (multi-GPU)")
-    parser.add_argument("--dx", type=int, default=1, help="position dimensions")
     parser.add_argument("--dv", type=int, default=1, help="velocity dimensions")
     parser.add_argument("--n", type=int, default=10**6, help="number of particles")
     parser.add_argument("--M", type=int, default=100, help="number of cells")
@@ -126,7 +125,7 @@ def main():
     print(f"Devices ({num_devices}): {devices}")
 
     # --- physical parameters ---
-    dx, dv = args.dx, args.dv
+    dv = args.dv
     n, M, dt = args.n, args.M, args.dt
     alpha, k = 0.1, 0.5
     L   = float(2 * np.pi / k)
@@ -134,7 +133,7 @@ def main():
     w   = L / n
     cells = (jnp.arange(M) + 0.5) * eta
 
-    print(f"Running dx={dx}, dv={dv}, n={n:.0e}, M={M}, dt={dt}")
+    print(f"Running dv={dv}, n={n:.0e}, M={M}, dt={dt}")
 
     # --- build jitted kernels ---
     pic_step, evaluate_charge_density = make_pic_step(mesh, M, eta, w, dt, L)

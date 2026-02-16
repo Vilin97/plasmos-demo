@@ -154,7 +154,6 @@ def make_pic_step(mesh, M, eta, w, dt_val, box_length):
 seed = 42
 
 q  = 1
-dx = 1
 dv = 1
 
 alpha = 0.1
