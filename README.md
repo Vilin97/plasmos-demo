@@ -14,8 +14,7 @@
   - already implemented, and experiments logged -- show W&B logging, reports and data loading
 
 ## Schedule
-- create conda env `conda create -n plasmos-demo python` and `conda activate plasmos-demo`
-- install JAX, W&B and other dependencies `pip install jax[cuda12] numpy tqdm matplotlib wandb`
+- create conda env `conda create -n plasmos-demo python` and `conda activate plasmos-demo`, install JAX, W&B and other dependencies `pip install jax[cuda12] numpy tqdm matplotlib wandb`
 - start with vlasov.py -- a barebones implementation of a PIC solver for the Vlasov equation
 - add multi-gpu support (use all available gpus, and all available memory). Should still be runnable on a cpu if no gpu is available.
 - make a runnable script with a `main()` that can accept: 
@@ -30,3 +29,4 @@
   - sweep dt in 1e-1, 1e-2, 1e-3
   - sweep dv in 1,3
   - sweep seed in 1,2,3
+- make a report in W&B
