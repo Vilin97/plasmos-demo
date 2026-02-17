@@ -29,4 +29,4 @@
   - sweep dt in 1e-1, 1e-2, 1e-3
   - sweep dv in 1,3
   - sweep seed in 1,2,3
-- make a report in W&B
+- make a report in W&B: [link](https://wandb.ai/naske/vlasov-pic/reports/Untitled-Report--VmlldzoxNTk2MTMyOQ?accessToken=qvujtaphnbcsc2z1i89eiexugwmua1qnc8flmkazctwvx0sp4130f7hcf0466m71)
